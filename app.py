@@ -1,40 +1,54 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request
 import joblib
-import numpy as np
+import pandas as pd
 
-# Initialize Flask app
 app = Flask(__name__)
 
-# Load the saved model
+# Load model
 model_path = "artifacts/best_model.pkl"
-
 model = joblib.load(model_path)
 
-# Define home route
 @app.route('/')
 def home():
-    return "🏠 Welcome to the California Housing Price Prediction API!"
+    return render_template('index.html')
 
-# Define a prediction route
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Get JSON data from request
-        data = request.get_json()
-        # Example input: {"features": [8.3252, 41.0, 6.984127, 1.02381, 322.0, 2.555556, 37.88, -122.23]}
-        features = np.array(data['features']).reshape(1, -1)
+        # Get all input values from HTML form
+        longitude = float(request.form['longitude'])
+        latitude = float(request.form['latitude'])
+        housing_median_age = float(request.form['housing_median_age'])
+        total_rooms = float(request.form['total_rooms'])
+        total_bedrooms = float(request.form['total_bedrooms'])
+        population = float(request.form['population'])
+        households = float(request.form['households'])
+        median_income = float(request.form['median_income'])
+        ocean_proximity = request.form['ocean_proximity']  # ✅ Added this
+
+        # ✅ Create DataFrame with all columns
+        input_data = pd.DataFrame([{
+            'longitude': longitude,
+            'latitude': latitude,
+            'housing_median_age': housing_median_age,
+            'total_rooms': total_rooms,
+            'total_bedrooms': total_bedrooms,
+            'population': population,
+            'households': households,
+            'median_income': median_income,
+            'ocean_proximity': ocean_proximity  # ✅ include this
+        }])
 
         # Make prediction
-        prediction = model.predict(features)[0]
+        prediction = model.predict(input_data)[0]
 
-        # Return the result
-        return jsonify({
-            "predicted_median_house_value": round(prediction, 2)
-        })
-    
+        return render_template(
+            'index.html',
+            prediction_text=f"🏡 Predicted House Price: ${round(prediction, 2)}"
+        )
+
     except Exception as e:
-        return jsonify({"error": str(e)})
+        return render_template('index.html', prediction_text=f"⚠️ Error: {str(e)}")
 
-# Run the app
 if __name__ == "__main__":
     app.run(debug=True)

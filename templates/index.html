@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>California Housing Price Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>California Housing Price Prediction 🏠</h1>
+        <form action="/predict" method="post">
+            <div class="input-group">
+                <label>Longitude:</label>
+                <input type="text" name="longitude" required>
+            </div>
+
+            <div class="input-group">
+                <label>Latitude:</label>
+                <input type="text" name="latitude" required>
+            </div>
+
+            <div class="input-group">
+                <label>Housing Median Age:</label>
+                <input type="text" name="housing_median_age" required>
+            </div>
+
+            <div class="input-group">
+                <label>Total Rooms:</label>
+                <input type="text" name="total_rooms" required>
+            </div>
+
+            <div class="input-group">
+                <label>Total Bedrooms:</label>
+                <input type="text" name="total_bedrooms" required>
+            </div>
+
+            <div class="input-group">
+                <label>Population:</label>
+                <input type="text" name="population" required>
+            </div>
+
+            <div class="input-group">
+                <label>Households:</label>
+                <input type="text" name="households" required>
+            </div>
+
+            <div class="input-group">
+                <label>Median Income:</label>
+                <input type="text" name="median_income" required>
+            </div>
+
+            <!-- 🧩 Added missing feature -->
+            <div class="input-group">
+                <label>Ocean Proximity:</label>
+                <select name="ocean_proximity" required>
+                    <option value="">-- Select --</option>
+                    <option value="INLAND">INLAND</option>
+                    <option value="NEAR BAY">NEAR BAY</option>
+                    <option value="NEAR OCEAN">NEAR OCEAN</option>
+                    <option value="ISLAND">ISLAND</option>
+                    <option value="1H OCEAN">1H OCEAN</option>
+                </select>
+            </div>
+
+            <button type="submit">Predict Price</button>
+        </form>
+
+        {% if prediction_text %}
+            <div class="result">
+                <h2>{{ prediction_text }}</h2>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
